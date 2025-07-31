@@ -1,8 +1,8 @@
-import 'index.css';
+import './index.css';
 
 function App() {
 	return (
-		<div className="App">
+		<div className="app">
 			<Logo />
 			<Form />
 			<PackingList />
@@ -12,16 +12,21 @@ function App() {
 }
 
 function Logo() {
-	return <header></header>;
+	return <h1>🌴Far Away💼</h1>;
 }
 
 function Form() {
-	return <section></section>;
+	return (
+		<section className="add-form">
+			<h3>what do you need for your 😍 trip </h3>
+		</section>
+	);
 }
 
 function PackingList() {
 	return (
-		<main>
+		<main className="list">
+			List
 			<Item />
 		</main>
 	);
@@ -30,6 +35,12 @@ function Item() {
 	return <div></div>;
 }
 function Stats() {
-	return <footer></footer>;
+	return (
+		<footer className="stats">
+			<em>
+				You Have X items on your list and you have already packed X (X%)
+			</em>
+		</footer>
+	);
 }
 export default App;
