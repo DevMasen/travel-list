@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import './index.css';
 
 const initialItems = [
@@ -21,20 +22,48 @@ function Logo() {
 }
 
 function Form() {
+	const [quantity, setQuantity] = useState(1);
+	const [description, setDescription] = useState('');
+
 	function handleSubmit(e) {
 		e.preventDefault();
+
+		if (!description) return;
+
+		const newItem = {
+			id: Date.now(),
+			description: description,
+			quantity: quantity,
+			packed: false,
+		};
+		console.log(newItem);
+
+		setDescription('');
+		setQuantity(1);
 	}
 	return (
 		<form className="add-form" onSubmit={handleSubmit}>
 			<h3>what do you need for your 😍 trip? </h3>
-			<select id="number">
+			<select
+				id="quantity"
+				value={quantity}
+				onChange={e => setQuantity(Number(e.target.value))}
+			>
 				{Array.from({ length: 20 }, (_, i) => i + 1).map(num => (
 					<option value={num} key={num}>
 						{num}
 					</option>
 				))}
 			</select>
-			<input id="item" type="text" placeholder="item..."></input>
+			<input
+				id="description"
+				type="text"
+				placeholder="item..."
+				value={description}
+				onChange={e => {
+					setDescription(e.target.value);
+				}}
+			></input>
 			<button>Add</button>
 		</form>
 	);
@@ -52,14 +81,20 @@ function PackingList() {
 	);
 }
 function Item({ item }) {
+	const [packed, setPacked] = useState(false);
 	return (
 		<li>
 			<input
 				type="checkbox"
 				id={`${item.id}`}
 				name={item.description}
+				value={packed}
+				onChange={() => {
+					setPacked(!packed);
+					item.packed = !packed;
+				}}
 			></input>
-			<span style={item.packed ? { textDecoration: 'line-through' } : {}}>
+			<span style={packed ? { textDecoration: 'line-through' } : {}}>
 				{item.quantity} {item.description}
 			</span>
 			<button style={{ color: 'red', fontSize: '40px' }}>&times;</button>
