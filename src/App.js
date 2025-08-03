@@ -1,17 +1,27 @@
 import { useState } from 'react';
 import './index.css';
 
-const initialItems = [
-	{ id: 1, description: 'Passports', quantity: 2, packed: false },
-	{ id: 2, description: 'Socks', quantity: 12, packed: false },
-];
-
 function App() {
+	const [items, setItems] = useState([]);
+
+	function handleAddItem(item) {
+		setItems(curItems => [...curItems, item]);
+	}
+	function handleRemoveItem(id) {
+		setItems(curItems => curItems.filter(item => item.id !== id));
+	}
+	function handlePacked(id) {
+		return;
+	}
 	return (
 		<div className="app">
 			<Logo />
-			<Form />
-			<PackingList />
+			<Form onHandleAddItem={handleAddItem} />
+			<PackingList
+				items={items}
+				onHandleRemoveItem={handleRemoveItem}
+				onHandlePacked={handlePacked}
+			/>
 			<Stats />
 		</div>
 	);
@@ -21,7 +31,7 @@ function Logo() {
 	return <h1>🌴Far Away💼</h1>;
 }
 
-function Form() {
+function Form({ onHandleAddItem }) {
 	const [quantity, setQuantity] = useState(1);
 	const [description, setDescription] = useState('');
 
@@ -36,7 +46,8 @@ function Form() {
 			quantity: quantity,
 			packed: false,
 		};
-		console.log(newItem);
+
+		onHandleAddItem(newItem);
 
 		setDescription('');
 		setQuantity(1);
@@ -69,18 +80,23 @@ function Form() {
 	);
 }
 
-function PackingList() {
+function PackingList({ items, onHandleRemoveItem, onHandlePacked }) {
 	return (
 		<div className="list">
 			<ul>
-				{initialItems.map(item => (
-					<Item item={item} key={item.id} />
+				{items.map(item => (
+					<Item
+						item={item}
+						onHandleRemoveItem={onHandleRemoveItem}
+						onHandlePacked={onHandlePacked}
+						key={item.id}
+					/>
 				))}
 			</ul>
 		</div>
 	);
 }
-function Item({ item }) {
+function Item({ item, onHandleRemoveItem, onHandlePacked }) {
 	const [packed, setPacked] = useState(false);
 	return (
 		<li>
@@ -91,13 +107,18 @@ function Item({ item }) {
 				value={packed}
 				onChange={() => {
 					setPacked(!packed);
-					item.packed = !packed;
+					onHandlePacked(item.id);
 				}}
 			></input>
 			<span style={packed ? { textDecoration: 'line-through' } : {}}>
 				{item.quantity} {item.description}
 			</span>
-			<button style={{ color: 'red', fontSize: '40px' }}>&times;</button>
+			<button
+				onClick={() => onHandleRemoveItem(item.id)}
+				style={{ color: 'red', fontSize: '40px' }}
+			>
+				&times;
+			</button>
 		</li>
 	);
 }
