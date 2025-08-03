@@ -10,19 +10,12 @@ function App() {
 	function handleRemoveItem(id) {
 		setItems(curItems => curItems.filter(item => item.id !== id));
 	}
-	function handlePackItem(item) {
-		setItems(curItems => {
-			const restItems = curItems.filter(i => i.id !== item.id);
-			const packedItemIndex = curItems.findIndex(i => i.id === item.id);
-			const newItems = restItems;
-			newItems.splice(packedItemIndex, 0, {
-				id: item.id,
-				description: item.description,
-				quantity: item.quantity,
-				packed: !item.packed,
-			});
-			return newItems;
-		});
+	function handlePackItem(id) {
+		setItems(curItems =>
+			curItems.map(item =>
+				item.id === id ? { ...item, packed: !item.packed } : item
+			)
+		);
 	}
 	return (
 		<div className="app">
@@ -108,20 +101,16 @@ function PackingList({ items, onRemoveItem, onPackItem }) {
 	);
 }
 function Item({ item, onRemoveItem, onPackItem }) {
-	const [packed, setPacked] = useState(false);
 	return (
 		<li>
 			<input
 				type="checkbox"
 				id={`${item.id}`}
 				name={item.description}
-				value={packed}
-				onChange={() => {
-					setPacked(!packed);
-					onPackItem(item);
-				}}
+				value={item.packed}
+				onChange={() => onPackItem(item.id)}
 			></input>
-			<span style={packed ? { textDecoration: 'line-through' } : {}}>
+			<span style={item.packed ? { textDecoration: 'line-through' } : {}}>
 				{item.quantity} {item.description}
 			</span>
 			<button
