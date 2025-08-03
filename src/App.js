@@ -10,8 +10,19 @@ function App() {
 	function handleRemoveItem(id) {
 		setItems(curItems => curItems.filter(item => item.id !== id));
 	}
-	function handlePacked(id) {
-		return;
+	function handlePacked(item) {
+		setItems(curItems => {
+			const restItems = curItems.filter(i => i.id !== item.id);
+			const packedItemIndex = curItems.findIndex(i => i.id === item.id);
+			const newItems = restItems;
+			newItems.splice(packedItemIndex, 0, {
+				id: item.id,
+				description: item.description,
+				quantity: item.quantity,
+				packed: !item.packed,
+			});
+			return newItems;
+		});
 	}
 	return (
 		<div className="app">
@@ -22,7 +33,7 @@ function App() {
 				onHandleRemoveItem={handleRemoveItem}
 				onHandlePacked={handlePacked}
 			/>
-			<Stats />
+			<Stats items={items} />
 		</div>
 	);
 }
@@ -107,7 +118,7 @@ function Item({ item, onHandleRemoveItem, onHandlePacked }) {
 				value={packed}
 				onChange={() => {
 					setPacked(!packed);
-					onHandlePacked(item.id);
+					onHandlePacked(item);
 				}}
 			></input>
 			<span style={packed ? { textDecoration: 'line-through' } : {}}>
@@ -122,11 +133,19 @@ function Item({ item, onHandleRemoveItem, onHandlePacked }) {
 		</li>
 	);
 }
-function Stats() {
+function Stats({ items }) {
+	const totalCount = items.length;
+	const packedCount = items.reduce(
+		(acc, item) => (item.packed ? acc + 1 : acc),
+		0
+	);
+	const packedPercent = Math.floor((packedCount / totalCount) * 100);
 	return (
 		<footer className="stats">
 			<em>
-				You Have X items on your list and you have already packed X (X%)
+				You Have {totalCount} items on your list and you have already
+				packed {packedCount} ({isNaN(packedPercent) ? 0 : packedPercent}
+				%)
 			</em>
 		</footer>
 	);
