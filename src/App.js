@@ -10,7 +10,7 @@ function App() {
 	function handleRemoveItem(id) {
 		setItems(curItems => curItems.filter(item => item.id !== id));
 	}
-	function handlePacked(item) {
+	function handlePackItem(item) {
 		setItems(curItems => {
 			const restItems = curItems.filter(i => i.id !== item.id);
 			const packedItemIndex = curItems.findIndex(i => i.id === item.id);
@@ -27,11 +27,11 @@ function App() {
 	return (
 		<div className="app">
 			<Logo />
-			<Form onHandleAddItem={handleAddItem} />
+			<Form onAddItem={handleAddItem} />
 			<PackingList
 				items={items}
-				onHandleRemoveItem={handleRemoveItem}
-				onHandlePacked={handlePacked}
+				onRemoveItem={handleRemoveItem}
+				onPackItem={handlePackItem}
 			/>
 			<Stats items={items} />
 		</div>
@@ -42,7 +42,7 @@ function Logo() {
 	return <h1>🌴Far Away💼</h1>;
 }
 
-function Form({ onHandleAddItem }) {
+function Form({ onAddItem }) {
 	const [quantity, setQuantity] = useState(1);
 	const [description, setDescription] = useState('');
 
@@ -58,7 +58,7 @@ function Form({ onHandleAddItem }) {
 			packed: false,
 		};
 
-		onHandleAddItem(newItem);
+		onAddItem(newItem);
 
 		setDescription('');
 		setQuantity(1);
@@ -91,15 +91,15 @@ function Form({ onHandleAddItem }) {
 	);
 }
 
-function PackingList({ items, onHandleRemoveItem, onHandlePacked }) {
+function PackingList({ items, onRemoveItem, onPackItem }) {
 	return (
 		<div className="list">
 			<ul>
 				{items.map(item => (
 					<Item
 						item={item}
-						onHandleRemoveItem={onHandleRemoveItem}
-						onHandlePacked={onHandlePacked}
+						onRemoveItem={onRemoveItem}
+						onPackItem={onPackItem}
 						key={item.id}
 					/>
 				))}
@@ -107,7 +107,7 @@ function PackingList({ items, onHandleRemoveItem, onHandlePacked }) {
 		</div>
 	);
 }
-function Item({ item, onHandleRemoveItem, onHandlePacked }) {
+function Item({ item, onRemoveItem, onPackItem }) {
 	const [packed, setPacked] = useState(false);
 	return (
 		<li>
@@ -118,14 +118,14 @@ function Item({ item, onHandleRemoveItem, onHandlePacked }) {
 				value={packed}
 				onChange={() => {
 					setPacked(!packed);
-					onHandlePacked(item);
+					onPackItem(item);
 				}}
 			></input>
 			<span style={packed ? { textDecoration: 'line-through' } : {}}>
 				{item.quantity} {item.description}
 			</span>
 			<button
-				onClick={() => onHandleRemoveItem(item.id)}
+				onClick={() => onRemoveItem(item.id)}
 				style={{ color: 'red', fontSize: '40px' }}
 			>
 				&times;
